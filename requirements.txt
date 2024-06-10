@@ -1,0 +1,4 @@
+numpy==1.26.4
+Requests==2.32.3
+sounddevice==0.4.7
+urllib3==2.2.1
