@@ -3,12 +3,12 @@ import os
 import time
 import uuid
 import wave
-
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QLabel, QComboBox, QPushButton, QMessageBox
 import numpy as np
 import requests
 import sounddevice as sd
 import urllib3
-
+import sys
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -143,3 +143,45 @@ def speak(text: str, voice: str = "Александра"):
         raise Exception("Failed to synthesize speech")
     
 
+class Interface(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        layout = QVBoxLayout()
+
+        self.text_input_label = QLabel('Введите стихотворение:', self)
+        self.text_input = QLineEdit(self)
+        layout.addWidget(self.text_input_label)
+        layout.addWidget(self.text_input)
+
+        self.combo_box_label = QLabel('Выберите голос:', self)
+        self.combo_box = QComboBox(self)
+        self.combo_box.addItems(['Наталья', 'Александра', 'Борис', 'Марфа', 'Тарас', 'Сергей'])
+        layout.addWidget(self.combo_box_label)
+        layout.addWidget(self.combo_box)
+
+        self.speak_button = QPushButton('Озвучить стихотворение', self)
+        self.speak_button.clicked.connect(self.onSpeak)
+        layout.addWidget(self.speak_button)
+
+        self.setLayout(layout)
+
+        self.setWindowTitle('Учим стихи')
+        self.setGeometry(300, 300, 400, 200)
+
+    def onSpeak(self):
+        text = self.text_input.text()
+        voice = self.combo_box.currentText()
+        try:
+            speak(text, voice)
+        except Exception as e:
+            QMessageBox.critical(self, 'Ошибка', f'Произошла ошибка: {str(e)}')
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = Interface()
+    ex.show()
+    sys.exit(app.exec_())
